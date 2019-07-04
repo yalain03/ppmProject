@@ -2,9 +2,11 @@ package com.example.ppmtool.services;
 
 import com.example.ppmtool.domain.Backlog;
 import com.example.ppmtool.domain.Project;
+import com.example.ppmtool.domain.ProjectTask;
 import com.example.ppmtool.exceptions.ProjectIdException;
 import com.example.ppmtool.repositories.BacklogRepository;
 import com.example.ppmtool.repositories.ProjectRepository;
+import com.example.ppmtool.repositories.ProjectTaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -17,6 +19,9 @@ public class ProjectService {
 
     @Autowired
     private BacklogRepository backlogRepository;
+
+    @Autowired
+    private ProjectTaskRepository projectTaskRepository;
 
     public Project saveOrUpdateProject(Project project) {
         try {
@@ -59,5 +64,9 @@ public class ProjectService {
         }
 
         projectRepository.delete(project);
+    }
+
+    public Iterable<ProjectTask> findBacklogById(String id) {
+        return projectTaskRepository.findByProjectIdentifierOrderByPriority(id);
     }
 }

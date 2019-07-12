@@ -1,5 +1,6 @@
 package com.example.ppmtool.web;
 
+import com.example.ppmtool.Validator.UserValidator;
 import com.example.ppmtool.domain.User;
 import com.example.ppmtool.services.MapValidationErrorService;
 import com.example.ppmtool.services.UserService;
@@ -24,8 +25,13 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private UserValidator userValidator;
+
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@Valid @RequestBody User user, BindingResult result) {
+        userValidator.validate(user, result);
+
         ResponseEntity<?> errorMap = mapValidationErrorService.MapValidationService(result);
         if(errorMap != null) return errorMap;
 

@@ -26,9 +26,12 @@ public class ProjectTaskService {
     @Autowired
     private ProjectRepository projectRepository;
 
-    public ProjectTask addProjectTask(String projectIdentifier, ProjectTask projectTask) {
+    @Autowired
+    private ProjectService projectService;
+
+    public ProjectTask addProjectTask(String projectIdentifier, ProjectTask projectTask, String username) {
         try {
-            Backlog backlog = backlogRepository.findByProjectIdentifier(projectIdentifier);
+            Backlog backlog = projectRepository.findByProjectIdentifierAndProjectLeader(projectIdentifier, username).getBacklog(); //backlogRepository.findByProjectIdentifier(projectIdentifier);
             projectTask.setBacklog(backlog);
             Integer backlogSequence = backlog.getPTSequence();
 
@@ -38,7 +41,7 @@ public class ProjectTaskService {
             projectTask.setProjectSequence(projectIdentifier+"-"+backlogSequence);
             projectTask.setProjectIdentifier(projectIdentifier);
 
-            if(projectTask.getPriority() == null) {
+            if(projectTask.getPriority() == null || projectTask.getPriority() == 0) {
                 projectTask.setPriority(3);
             }
 
@@ -52,8 +55,8 @@ public class ProjectTaskService {
         }
     }
 
-    public List<ProjectTask> findBacklogById(String id) {
-        Project project = projectRepository.findByProjectIdentifier(id);
+    public List<ProjectTask> findBacklogById(String id, String username) {
+        Project project = projectRepository.findByProjectIdentifierAndProjectLeader(id, username);
 
         if(project == null) {
             throw new ProjectNotFoundException("Project with ID: '" + id + "' does not exist!");
